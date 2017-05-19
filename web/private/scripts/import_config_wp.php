@@ -10,7 +10,7 @@ $secrets = _get_secrets( array( 'slack_channel', 'live_url' ) );
 // Provide the Slack Details
 $slack_channel_name = $secrets['slack_channel'];
 $slack_user_name    = 'WP-CLI-on-Pantheon';
-$slack_user_icon    = $secrets['live_url'] . '/wp-content/uploads/icons/wp-cfm.png';
+$slack_user_icon    = $secrets['live_url'] . '/slack-icons/wp-cfm.png';
 
 // Activate the wp-cfm plugin
 exec( 'wp plugin activate wp-cfm 2>&1' );
@@ -23,13 +23,13 @@ $files = array_diff( scandir( $path ), array( '.', '..' ) );
 foreach( $files as $file ){
 	$file_parts = pathinfo($file);
 
-	if( $file_parts['extension'] != 'json' || stripos( $config_map, $file ) !== FALSE ){
+	if( $file_parts['extension'] != 'json' ){
 		continue;
 	}
 
 	_slack_tell( 'Importation of WordPress WP-CFM ' . $file . ' Configuration on the ' . PANTHEON_ENVIRONMENT . ' environment is starting...', $slack_channel_name, $slack_user_name, $slack_user_icon );
 
-	exec( 'wp config pull ' . $config_name . ' 2>&1', $output );
+	exec( 'wp config pull ' . $file_parts['filename'] . ' 2>&1', $output );
 	if ( count( $output ) > 0 ) {
 		$output = preg_replace( '/\s+/', ' ', array_slice( $output, 1, - 1 ) );
 		$output = str_replace( ' update', ' [update]', $output );

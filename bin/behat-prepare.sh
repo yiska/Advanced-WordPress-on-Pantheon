@@ -6,16 +6,6 @@
 # such that it can be run a second time if a step fails.
 ###
 
-# Log into terminus.
-echo -e "\nLogging into Terminus"
-terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
-
-terminus auth:whoami > /dev/null
-if [ $? -ne 0 ]; then
-	echo "Terminus unauthenticated; assuming unauthenticated build"
-	exit 0
-fi
-
 if [ -z "$BEHAT_TEST_URL" ] || [ -z "$RUN_BEHAT_BUILD" ]; then
 	echo "BEHAT_TEST_URL and RUN_BEHAT_BUILD environment variables must be set"
 	exit 1
@@ -32,6 +22,12 @@ if [ -z "$WORDPRESS_ADMIN_USERNAME" ] || [ -z "$WORDPRESS_ADMIN_PASSWORD" ]; the
 fi
 
 set -ex
+
+###
+# Delete existing WordPress admin user
+###
+echo "Deleting the WordPress user $WORDPRESS_ADMIN_USERNAME"
+terminus wp $PANTHEON_SITE_UUID.$BEHAT_ENV -- user delete $WORDPRESS_ADMIN_USERNAME --yes
 
 ###
 # Create a backup of the environment
