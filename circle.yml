@@ -17,6 +17,7 @@ machine:
       # in this step, it would result in a different password being used in each
       # line of other steps. Each CircleCI command runs in a separate shell.
       WORDPRESS_ADMIN_PASSWORD: $(cat ~/WORDPRESS_ADMIN_PASSWORD)
+      RUN_BEHAT_BUILD: true
 
   # This will be added to the `/etc/hosts` file
   hosts:
